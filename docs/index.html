@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Harness Engineering v2 — AI가 여러 개여도, 규칙은 하나.</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap">
+<style>
+/* ink + gray + mesh gradient theme */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: #fafafa;
+  color: #171717;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", "Malgun Gothic", sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  font-synthesis: none;
+}
+::selection { background: #171717; color: #f2f2f2; }
+a { color: inherit; text-decoration: none; }
+.wrap { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+/* nav */
+.nav {
+  height: 64px; background: #ffffff; border-bottom: 1px solid #ebebeb;
+  display: flex; align-items: center; position: sticky; top: 0; z-index: 10;
+}
+.nav .wrap { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+.nav__logo { font-weight: 600; font-size: 16px; letter-spacing: -0.4px; }
+.nav__logo span { font-family: "JetBrains Mono", monospace; font-size: 11px; color: #888888; margin-left: 8px; font-weight: 400; }
+.nav__cta {
+  background: #171717; color: #ffffff; font-size: 14px; font-weight: 500; line-height: 20px;
+  border-radius: 6px; padding: 4px 10px; display: inline-block;
+}
+
+/* hero */
+.hero { position: relative; background: #ffffff; overflow: hidden; padding: 96px 0 96px; text-align: center; }
+.hero__mesh {
+  position: absolute; inset: -40% -20% auto -20%; height: 130%;
+  background:
+    radial-gradient(38% 45% at 22% 30%, rgba(0,124,240,.32), transparent 70%),
+    radial-gradient(34% 40% at 50% 18%, rgba(0,223,216,.28), transparent 70%),
+    radial-gradient(36% 44% at 72% 32%, rgba(121,40,202,.26), transparent 70%),
+    radial-gradient(30% 38% at 86% 55%, rgba(255,0,128,.22), transparent 70%),
+    radial-gradient(30% 36% at 12% 62%, rgba(249,203,40,.20), transparent 70%);
+  filter: blur(48px); pointer-events: none;
+}
+.hero .wrap { position: relative; }
+.hero__badge {
+  display: inline-block; background: #fafafa; border: 1px solid #ebebeb; color: #4d4d4d;
+  font-family: "JetBrains Mono", monospace; font-size: 12px; line-height: 16px;
+  border-radius: 9999px; padding: 6px 14px; margin-bottom: 24px;
+}
+.hero h1 {
+  margin: 0 auto 16px; max-width: 17em;
+  font-size: 48px; font-weight: 600; line-height: 52px; letter-spacing: -2.4px;
+}
+.hero__lead { margin: 0 auto 32px; max-width: 38em; font-size: 18px; line-height: 28px; color: #4d4d4d; }
+.btn-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.btn-primary {
+  background: #171717; color: #ffffff; font-size: 16px; font-weight: 500; line-height: 24px;
+  border-radius: 100px; padding: 12px 24px; display: inline-block;
+  box-shadow: 0 1px 1px #00000005, 0 2px 2px #0000000a;
+}
+.btn-secondary {
+  background: #ffffff; color: #171717; font-size: 16px; font-weight: 500; line-height: 24px;
+  border-radius: 100px; padding: 12px 24px; display: inline-block;
+  box-shadow: inset 0 0 0 1px #00000014, 0 1px 1px #00000005;
+}
+.hero__note { margin-top: 20px; font-family: "JetBrains Mono", monospace; font-size: 12px; color: #888888; }
+
+/* stat band */
+.stats { padding: 64px 0; background: #fafafa; }
+.stats__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.stat {
+  background: #ffffff; border-radius: 8px; padding: 24px;
+  box-shadow: inset 0 0 0 1px #00000014, 0 1px 1px #00000005, 0 2px 2px #0000000a;
+}
+.stat__num { font-size: 32px; font-weight: 600; line-height: 40px; letter-spacing: -1.28px; }
+.stat__num small { font-size: 18px; letter-spacing: -0.4px; font-weight: 500; color: #4d4d4d; }
+.stat__label { font-family: "JetBrains Mono", monospace; font-size: 12px; line-height: 16px; color: #888888; margin-top: 6px; }
+.stat__desc { font-size: 14px; line-height: 20px; letter-spacing: -0.28px; color: #4d4d4d; margin-top: 10px; }
+.stats__src { margin-top: 16px; font-family: "JetBrains Mono", monospace; font-size: 12px; color: #888888; text-align: center; }
+
+/* generic section */
+.section { padding: 96px 0; }
+.section--white { background: #ffffff; border-top: 1px solid #ebebeb; border-bottom: 1px solid #ebebeb; }
+.eyebrow { font-family: "JetBrains Mono", monospace; font-size: 12px; line-height: 16px; color: #888888; margin: 0 0 12px; }
+.section h2 { margin: 0 0 12px; font-size: 32px; font-weight: 600; line-height: 40px; letter-spacing: -1.28px; max-width: 22em; }
+.section__lead { margin: 0 0 40px; max-width: 40em; font-size: 18px; line-height: 28px; color: #4d4d4d; }
+
+/* problem cards */
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+.card {
+  background: #ffffff; border-radius: 8px; padding: 24px;
+  box-shadow: inset 0 0 0 1px #00000014, 0 2px 2px #0000000a, 0 8px 8px -8px #0000000a;
+}
+.card--soft { background: #fafafa; }
+.card h3 { margin: 0 0 8px; font-size: 20px; font-weight: 600; line-height: 28px; letter-spacing: -0.6px; }
+.card p { margin: 0; font-size: 14px; line-height: 21px; letter-spacing: -0.28px; color: #4d4d4d; }
+.card .tag { display: inline-block; font-family: "JetBrains Mono", monospace; font-size: 12px; color: #888888; margin-bottom: 10px; }
+.card .fact {
+  margin-top: 12px; padding-top: 10px; border-top: 1px solid #ebebeb;
+  font-family: "JetBrains Mono", monospace; font-size: 12px; line-height: 17px; color: #0070f3;
+}
+
+/* dark band */
+.dark { background: #171717; color: #ffffff; padding: 96px 0; }
+.dark .eyebrow { color: #888888; }
+.dark h2 { color: #ffffff; }
+.dark .section__lead { color: #a1a1a1; }
+.dark__grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 32px; align-items: start; }
+.term {
+  background: #000000; border-radius: 8px; padding: 24px;
+  font-family: "JetBrains Mono", monospace; font-size: 13px; line-height: 20px;
+  box-shadow: inset 0 0 0 1px #ffffff1f;
+  overflow-x: auto; white-space: pre; color: #d4d4d4;
+}
+.term .g { color: #50e3c2; }
+.term .r { color: #ff6b81; }
+.term .c { color: #888888; }
+.step { display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px solid #ffffff1f; }
+.step:last-child { border-bottom: 0; }
+.step__n { font-family: "JetBrains Mono", monospace; font-size: 12px; color: #50e3c2; flex: 0 0 24px; padding-top: 3px; }
+.step b { display: block; font-size: 15px; font-weight: 600; letter-spacing: -0.3px; margin-bottom: 3px; color: #ffffff; }
+.step p { margin: 0; font-size: 13.5px; line-height: 20px; color: #a1a1a1; }
+
+/* guide */
+.guide-step { display: flex; gap: 16px; padding: 20px 0; border-bottom: 1px solid #ebebeb; }
+.guide-step:last-child { border-bottom: 0; }
+.guide-step__n {
+  flex: 0 0 32px; height: 32px; border-radius: 9999px; background: #171717; color: #ffffff;
+  font-family: "JetBrains Mono", monospace; font-size: 13px; display: flex; align-items: center; justify-content: center;
+}
+.guide-step h3 { margin: 2px 0 6px; font-size: 18px; font-weight: 600; letter-spacing: -0.45px; line-height: 24px; }
+.guide-step p { margin: 0 0 6px; font-size: 14.5px; line-height: 22px; color: #4d4d4d; max-width: 46em; }
+.guide-step code, .doicode {
+  font-family: "JetBrains Mono", monospace; font-size: 12.5px; background: #f5f5f5;
+  border: 1px solid #ebebeb; border-radius: 4px; padding: 1px 6px; color: #171717; white-space: nowrap;
+}
+.snippet {
+  background: #171717; color: #d4d4d4; border-radius: 8px; padding: 16px 18px; margin-top: 10px;
+  font-family: "JetBrains Mono", monospace; font-size: 12.5px; line-height: 19px; overflow-x: auto; white-space: pre;
+  max-width: 620px;
+}
+.dodont { margin-top: 40px; }
+.dodont .card h3 { font-size: 16px; letter-spacing: -0.4px; }
+.dodont ul { margin: 10px 0 0; padding: 0 0 0 2px; list-style: none; }
+.dodont li { font-size: 14px; line-height: 21px; letter-spacing: -0.28px; color: #4d4d4d; padding: 5px 0 5px 22px; position: relative; border-top: 1px solid #f5f5f5; }
+.dodont li::before { position: absolute; left: 0; font-family: "JetBrains Mono", monospace; font-size: 12px; }
+.dodont .do li::before { content: "✓"; color: #0070f3; }
+.dodont .dont li::before { content: "✕"; color: #ee0000; }
+
+/* pricing-ish value cards */
+.value__grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; align-items: stretch; }
+.vcard {
+  background: #ffffff; border-radius: 12px; padding: 32px;
+  box-shadow: inset 0 0 0 1px #00000014, 0 2px 2px #0000000a, 0 8px 16px -4px #0000000a;
+  display: flex; flex-direction: column;
+}
+.vcard--featured { background: #171717; color: #ffffff; }
+.vcard--featured .vcard__body li { color: #a1a1a1; border-color: #ffffff1f; }
+.vcard h3 { margin: 0 0 4px; font-size: 24px; font-weight: 600; letter-spacing: -0.96px; line-height: 32px; }
+.vcard__sub { font-family: "JetBrains Mono", monospace; font-size: 12px; color: #888888; margin-bottom: 16px; }
+.vcard__body { flex: 1; }
+.vcard__body li { list-style: none; font-size: 14px; line-height: 20px; letter-spacing: -0.28px; color: #4d4d4d; padding: 8px 0; border-top: 1px solid #ebebeb; }
+.vcard__body ul { margin: 0; padding: 0; }
+
+/* cta band */
+.cta { text-align: center; padding: 96px 0 128px; background: #ffffff; border-top: 1px solid #ebebeb; position: relative; overflow: hidden; }
+.cta__mesh {
+  position: absolute; inset: auto -20% -60% -20%; height: 110%;
+  background:
+    radial-gradient(40% 50% at 30% 80%, rgba(0,124,240,.18), transparent 70%),
+    radial-gradient(40% 50% at 70% 85%, rgba(255,0,128,.14), transparent 70%);
+  filter: blur(48px); pointer-events: none;
+}
+.cta .wrap { position: relative; }
+.cta h2 { font-size: 32px; font-weight: 600; letter-spacing: -1.28px; line-height: 40px; margin: 0 0 12px; }
+.cta p { color: #4d4d4d; margin: 0 0 28px; }
+.footer { background: #ffffff; border-top: 1px solid #ebebeb; padding: 40px 0 64px; color: #888888; font-size: 13px; line-height: 20px; }
+.footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.footer .mono { font-family: "JetBrains Mono", monospace; font-size: 12px; }
+
+@media (max-width: 959px) {
+  .stats__grid, .grid-3, .value__grid { grid-template-columns: 1fr 1fr; }
+  .dark__grid { grid-template-columns: 1fr; }
+  .hero h1 { font-size: 34px; line-height: 40px; letter-spacing: -1.4px; }
+}
+@media (max-width: 599px) {
+  .stats__grid, .grid-3, .grid-2, .value__grid { grid-template-columns: 1fr; }
+  .section, .dark { padding: 64px 0; }
+}
+@media print {
+  .nav, .btn-row, .nav__cta { display: none !important; }
+  body { background: #fff; }
+  .dark, .term, .snippet, .vcard--featured { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  section, .card, .vcard { break-inside: avoid; }
+  a[href^="http"]::after { content: " (" attr(href) ")"; font-size: .82em; color: #888; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="wrap">
+    <div class="nav__logo">Harness Engineering <span>v2 · MIT</span></div>
+    <a class="nav__cta" href="https://github.com/Capernaum-user/harness-engineering">GitHub에서 보기</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero__mesh" aria-hidden="true"></div>
+  <div class="wrap">
+    <div class="hero__badge">17 documents · 2-file boot · adversarially verified</div>
+    <h1>AI가 몇 개를 돌아도, 규칙은 하나가 되게 하십시오.</h1>
+    <p class="hero__lead">Claude, Gemini, Codex — 여러 AI 세션이 한 지식 저장소 위에서 일하는 순간, 규칙은 복제되고 복제된 규칙은 서로 다른 답을 하기 시작합니다. Harness Engineering v2는 그 붕괴를 실제로 겪고, 실측으로 고치고, 격리 검증까지 거친 17문서 거버넌스 프레임워크입니다.</p>
+    <div class="btn-row">
+      <a class="btn-primary" href="https://github.com/Capernaum-user/harness-engineering">무료로 시작하기 — GitHub</a>
+      <a class="btn-secondary" href="#guide">설치 후 뭘 바꾸면 되나요?</a>
+    </div>
+    <p class="hero__note">코드 빌드 없음 — 치환 항목은 PLACEHOLDERS.md 표 한 장 분량의 텍스트 치환이 전부입니다.</p>
+  </div>
+</header>
+
+<!-- STATS -->
+<section class="stats">
+  <div class="wrap">
+    <div class="stats__grid">
+      <div class="stat">
+        <div class="stat__num">110<small>건</small></div>
+        <div class="stat__label">CONFIRMED DEFECTS FIXED</div>
+        <p class="stat__desc">전수 감사에서 규칙 결함 110건(치명 2·주요 60·경미 48)을 확정하고, 5단계 재설계로 반영했습니다.</p>
+      </div>
+      <div class="stat">
+        <div class="stat__num">133<small> agents</small></div>
+        <div class="stat__label">VERIFICATION AGENTS</div>
+        <p class="stat__desc">문서별 감사관 21 + 발견 전건을 "기각이 기본자세"로 재검증한 반박 검증관 111 + 시스템 실사 1.</p>
+      </div>
+      <div class="stat">
+        <div class="stat__num">-90<small>%</small></div>
+        <div class="stat__label">BOOT READING DIET</div>
+        <p class="stat__desc">세션 부팅 필수 독서량 최대 93KB → 9.6KB. 필수는 헌법 + 부팅 매니페스트 단 2개 문서입니다.</p>
+      </div>
+      <div class="stat">
+        <div class="stat__num">0.9<small>%</small></div>
+        <div class="stat__label">REFUTATION RATE</div>
+        <p class="stat__desc">감사 발견 111건 중 반박 검증에서 기각된 것은 1건. 이 프레임워크의 결함 목록은 추측이 아니라 실측입니다.</p>
+      </div>
+      <div class="stat">
+        <div class="stat__num">7/9<small> +2</small></div>
+        <div class="stat__label">ISOLATED VERIFICATION</div>
+        <p class="stat__desc">재설계 결과를 깨끗한 별도 세션이 9개 항목으로 실측 판정 — 작성자와 검토자 둘 다 놓친 결함 2건을 추가로 잡아냈습니다.</p>
+      </div>
+      <div class="stat">
+        <div class="stat__num">~24<small>h</small></div>
+        <div class="stat__label">FULL REBUILD</div>
+        <p class="stat__desc">감사 → 승인 → 5단계 재설계 → 격리 검증까지 하루. 모든 단계가 커밋된 복원 지점 위에서 진행돼 언제든 되돌릴 수 있었습니다.</p>
+      </div>
+    </div>
+    <p class="stats__src">모든 수치는 2026-07 실제 감사·재설계·격리 검증 기록의 실측치입니다. 추정치·벤치마크 아님.</p>
+  </div>
+</section>
+
+<!-- PROBLEM -->
+<section class="section section--white">
+  <div class="wrap">
+    <p class="eyebrow">WHY — 실제로 일어났던 일</p>
+    <h2>멀티 AI 운영이 무너지는 방식은 늘 같습니다.</h2>
+    <p class="section__lead">이 프레임워크는 이론이 아니라 부검 보고서에서 태어났습니다. 아래 세 가지는 실제 운영 환경의 전수 감사에서 실측으로 확인된 붕괴 패턴입니다.</p>
+    <div class="grid-3">
+      <div class="card">
+        <span class="tag">PATTERN 01</span>
+        <h3>복제된 규칙은 반드시 갈라진다</h3>
+        <p>같은 규칙을 여러 문서에 복사하면, 한쪽만 갱신되는 순간부터 문서들이 서로 다른 답을 합니다. 검증 기준·파일명 규칙·우선순위가 문서마다 달라져 어느 쪽을 따라도 누군가에겐 위반이 됩니다.</p>
+        <p class="fact">실측: "보안 vs 사용자 지시" 우선순위에 3개 문서가 3가지 답 — 세션이 읽는 문서에 따라 정반대로 행동</p>
+      </div>
+      <div class="card">
+        <span class="tag">PATTERN 02</span>
+        <h3>유령 문서가 쌓인다</h3>
+        <p>"통합했다"는 기록만 남고 원본이 살아남으면, 폐기됐어야 할 문서가 몇 주씩 정본 행세를 합니다. 에이전트는 어느 것이 진짜인지 판단할 수 없고, 유지보수는 모든 사본을 고쳐야 하는 일이 됩니다.</p>
+        <p class="fact">실측: 통합 선언 후 8주간 통합본 2 + 폐기 대상 원본 5가 전부 "active"로 병존</p>
+      </div>
+      <div class="card">
+        <span class="tag">PATTERN 03</span>
+        <h3>자기 채점은 결함을 못 잡는다</h3>
+        <p>작업한 세션이 스스로 검증하면 자기 작업을 관대하게 봅니다. 규칙을 만든 자가 규칙 준수를 검사하면, 정본 문서가 자기 규칙을 어기고 있어도 아무도 모릅니다.</p>
+        <p class="fact">실측: 격리 세션 검증이 작성자·검토자 둘 다 놓친 결함 2건 적발 (자기규칙 위반 포함)</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CAPABILITIES -->
+<section class="section">
+  <div class="wrap">
+    <p class="eyebrow">CAPABILITIES — 숨어 있는 10가지 장치</p>
+    <h2>문서 17개처럼 보이지만, 실제로는 10개의 안전장치입니다.</h2>
+    <p class="section__lead">각 장치는 위 붕괴 패턴 중 하나를 구조적으로 막습니다. 전부 실제 사고에서 역산해 설계됐습니다.</p>
+    <div class="grid-3">
+      <div class="card card--soft"><span class="tag">01 · CONSTITUTION</span><h3>헌법 + 정합화 조항</h3><p>충돌 우선순위의 정본은 헌법 한 곳뿐. 다른 문서의 서열 서술은 전부 포인터로 강등되고, 문구가 갈리면 헌법이 이깁니다. "어느 문서를 먼저 읽었는가"가 행동을 바꾸지 못하게 합니다.</p></div>
+      <div class="card card--soft"><span class="tag">02 · BOOT MANIFEST</span><h3>2문서 부팅 + 조건부 로드</h3><p>모든 세션의 필수 독서는 헌법 + 매니페스트 2개(합계 15KB 이내). 나머지 15개 문서는 "파일 작업을 할 때만", "인수인계할 때만" 조건부로 로드됩니다. 토큰과 시간을 태우는 부팅 의식이 사라집니다.</p></div>
+      <div class="card card--soft"><span class="tag">03 · SEPARATION</span><h3>삼권분립 세션 격리</h3><p>기획·구현·검증은 도구가 아니라 세션의 역할입니다. 구현 세션은 자기 작업을 검증해 "완료"를 선언할 수 없고, 검증은 아무것도 구현하지 않은 깨끗한 세션이 실측으로만 합니다.</p></div>
+      <div class="card card--soft"><span class="tag">04 · UNATTENDED OPS</span><h3>무인 실행 거버넌스</h3><p>"작업지시서(ORDER)는 사용자 승인이 아니다" — 무인 워커가 지시서를 승인으로 오인해 고위험 작업을 수행하는 사고를 원천 차단합니다. 킬스위치 파일, 고위험 작업의 무인 금지, 보류 후 에스컬레이션 절차까지 정본화되어 있습니다.</p></div>
+      <div class="card card--soft"><span class="tag">05 · PUBLISH GATE</span><h3>visibility 발행 게이트</h3><p>모든 문서가 frontmatter에 public / internal / pii 등급을 가집니다. 공개 사이트 발행은 public만 통과 — 기밀 메모가 블로그로 새는 경로가 메타데이터 수준에서 막힙니다.</p></div>
+      <div class="card card--soft"><span class="tag">06 · CHECKPOINT</span><h3>복구 지점 규율</h3><p>5개 초과 파일의 일괄 작업·인덱스 재생성 전에는 git checkpoint 커밋이 관문입니다. 실패해도 명령 한 줄로 복원 — 실제 재설계 전 과정이 커밋된 복원 지점 위에서 안전하게 진행됐습니다.</p></div>
+      <div class="card card--soft"><span class="tag">07 · REGISTRY</span><h3>시스템 레지스트리</h3><p>릴레이·검색·수집 폴더·훅 등 실제 가동 중인 시스템의 명부. 새 세션이 "이 환경에 뭐가 있는지"를 추측하지 않고 조회합니다. 감사에서 가동 시스템 13종 중 9종이 규칙에 없었던 것이 이 문서가 생긴 이유입니다.</p></div>
+      <div class="card card--soft"><span class="tag">08 · CHANGE LEDGER</span><h3>변경 이력 회계</h3><p>하네스 규칙의 의미가 바뀌면 반드시 이력 장부에 남깁니다. "누가 언제 왜"가 없는 규칙 변경은 몇 주 뒤 아무도 설명 못 하는 모순이 됩니다 — 실제로 7주 기록 공백이 유령 문서 사태의 공범이었습니다.</p></div>
+      <div class="card card--soft"><span class="tag">09 · FRESHNESS</span><h3>신선도 내구성</h3><p>문서에 날짜·개수를 박제하지 않습니다. "인덱스가 6월 16일자다" 대신 "수정일을 비교해 뒤처졌으면 재색인하라"는 판정 절차문으로 씁니다. 쓰는 순간부터 낡는 문장이 구조적으로 사라집니다.</p></div>
+      <div class="card card--soft"><span class="tag">10 · SEARCH HONESTY</span><h3>검색 한계 인지</h3><p>"의미 검색에 안 나옴 ≠ 존재하지 않음." 색인 크기 상한처럼 검색 도구가 조용히 놓치는 지점을 규칙이 명시해, 에이전트가 대형 문서를 '없는 것'으로 오판하는 사고를 막습니다.</p></div>
+      <div class="card"><span class="tag">BONUS · TEMPLATE</span><h3>플레이스홀더 이식성</h3><p>사용자 고유 값은 전부 <span class="doicode">{{VAULT_ROOT}}</span> 형식 플레이스홀더입니다. 개인정보 유출 검사 3중 게이트(정제 17 + 유출 사냥 17 + 결정론 스캔 60패턴)를 통과한 순수 원본만 배포됩니다.</p></div>
+      <div class="card"><span class="tag">BONUS · DUAL MODE</span><h3>단독/협업 이중 모드</h3><p>혼자 쓰는 단독 세션과 릴레이·다중 세션 협업이 같은 문서로 굴러갑니다. 모든 절차 문서에 두 모드의 분기가 명시되어, 규모를 키울 때 규칙을 다시 쓸 필요가 없습니다.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- METHODOLOGY (dark) -->
+<section class="dark">
+  <div class="wrap">
+    <p class="eyebrow">PROOF — 이 문서 세트는 이렇게 만들어졌습니다</p>
+    <h2>주장이 아니라 검증 파이프라인이 품질을 보증합니다.</h2>
+    <p class="section__lead">v2는 이 4단계 파이프라인을 거쳐 만들어졌습니다. 파이프라인은 체크리스트·방법론 문서로 저장소에 함께 배포되어, 여러분의 규칙도 같은 방식으로 검증할 수 있습니다.</p>
+    <div class="dark__grid">
+      <div>
+        <div class="step"><span class="step__n">01</span><div><b>전수 감사</b><p>문서별 독립 감사관이 모든 사실 주장(경로·날짜·규칙·역할)을 파일시스템과 git 실측으로 대조합니다. 인상 비평 금지, 근거 없는 발견 금지.</p></div></div>
+        <div class="step"><span class="step__n">02</span><div><b>적대적 반박 검증</b><p>발견 전건을 "기각이 기본자세"인 별도 검증관이 재검증합니다. 원문 재인용 + 재실측에서 살아남은 것만 확정 — 기각률 0.9%가 목록의 신뢰도입니다.</p></div></div>
+        <div class="step"><span class="step__n">03</span><div><b>커버리지 대조</b><p>수정 계획이 확정 발견 110건을 빠짐없이 커버하는지 역방향으로 대조합니다. 이 단계가 계획의 공백 11건과 불일치 2건(진입 순서가 정반대였던 오류 포함)을 실행 전에 잡았습니다.</p></div></div>
+        <div class="step"><span class="step__n">04</span><div><b>격리 검증</b><p>구현에 관여하지 않은 깨끗한 세션이 체크리스트 9종을 실측 판정합니다. 파일 수정 권한 없음, 보고만 — 자기 채점의 관대함이 끼어들 자리가 없습니다.</p></div></div>
+      </div>
+      <div class="term">$ verify --isolated --checks 9
+
+<span class="g">PASS</span>  V1  독자 우선순위 서열 서술 ......... 0건
+<span class="g">PASS</span>  V2  낡은 enum·단어수 잔존 .......... 0건
+<span class="g">PASS</span>  V3  파일 수·보관 정합 ......... 17 + 5
+<span class="g">PASS</span>  V4  죽은 링크 ..................... 0건
+<span class="g">PASS</span>  V5  부팅 예산 ........ 9,653B ≤ 15KB
+<span class="g">PASS</span>  V6  신규 안전장치 5종 존재 ....... 5/5
+<span class="r">FAIL</span>  V7  visibility 자기규칙 위반 <span class="c">← 적발</span>
+<span class="g">PASS</span>  V8  진입 문구 3파일 동일 ....... MD5 =
+<span class="r">FAIL</span>  V9  부팅 연결 고리 누락 1건 <span class="c">← 적발</span>
+
+<span class="c"># FAIL 2건 → 재작업 지시서 발행, 회수 진행.
+# 잡아낸 세션은 이 시스템을 만든 세션이 아닙니다.
+# 배포 템플릿에는 두 결함의 수정이 반영되어 있습니다.</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- GUIDE -->
+<section class="section section--white" id="guide">
+  <div class="wrap">
+    <p class="eyebrow">GETTING STARTED — 설치 후 바꿔야 할 것들</p>
+    <h2>처음 설치하면, 이 순서대로 6단계만 바꾸면 됩니다.</h2>
+    <p class="section__lead">전부 텍스트 편집입니다. 코드 빌드도, 의존성 설치도 없습니다. 1~4단계만 끝나면 가동되고, 5~6단계는 운영하면서 천천히 하면 됩니다.</p>
+
+    <div class="guide-step"><span class="guide-step__n">1</span><div>
+      <h3>저장소를 받아 Vault에 넣습니다</h3>
+      <p>17개 <code>.md</code> 파일을 자신의 Obsidian Vault(또는 어떤 마크다운 저장소든) 안의 <code>00_Harness/</code> 폴더로 복사합니다.</p>
+      <div class="snippet">git clone https://github.com/Capernaum-user/harness-engineering
+# → 17개 .md 를 &lt;내 Vault&gt;/00_Harness/ 로 복사</div>
+    </div></div>
+
+    <div class="guide-step"><span class="guide-step__n">2</span><div>
+      <h3>플레이스홀더를 전역 치환합니다 — 가장 중요한 단계</h3>
+      <p>에디터에서 <code>{{</code> 를 전역 검색하면 바꿔야 할 곳이 전부 나옵니다. 핵심은 6개: <code>{{VAULT_ROOT}}</code>(저장소 경로) · <code>{{CODE_ROOT}}</code>(코드 폴더) · <code>{{HTML_DOCS_DIR}}</code>(산출물 수집 폴더) · <code>{{WORK_LOG_DIR}}</code>(작업 일지) · <code>{{USER_NAME}}</code>(자기 호칭) · <code>{{CHECKPOINT_TIMES}}</code>(일지 시각). 나머지는 <code>PLACEHOLDERS.md</code> 표에 전부 정리되어 있고, <b>안 쓰는 기능의 플레이스홀더는 그 줄을 지우면 됩니다.</b></p>
+    </div></div>
+
+    <div class="guide-step"><span class="guide-step__n">3</span><div>
+      <h3>"내 것"으로 채우는 문서 2개</h3>
+      <p><code>project-mission-context.md</code> — 내 조직·미션·핵심 프로젝트를 골격에 채웁니다 (작성 안내 주석이 들어 있음). <code>agent-systems-registry.md</code> — 내 환경에서 실제 돌아가는 시스템(검색 도구·수집 폴더·릴레이 등)을 명부에 등재합니다. 없으면 예시 행을 지우고 비워둬도 됩니다 — 나중에 생길 때마다 한 줄씩 추가하는 문서입니다.</p>
+    </div></div>
+
+    <div class="guide-step"><span class="guide-step__n">4</span><div>
+      <h3>각 AI의 전역 설정 파일에 연결 헤더를 넣습니다</h3>
+      <p>CLAUDE.md / GEMINI.md / AGENTS.md 등 사용하는 도구의 진입 파일에 아래 3줄을 넣으면, 어떤 AI로 세션을 열어도 같은 하네스로 부팅됩니다.</p>
+      <div class="snippet">&gt; 전역 부팅 후, Vault 하네스의 첫 읽기는 00_Harness/ai-master-constitution.md 다.
+&gt; 이후 진입 순서는 00_Harness/boot-manifest.md 를 따른다.
+&gt; 규칙을 여기에 새로 적거나 분기시키지 말 것.</div>
+    </div></div>
+
+    <div class="guide-step"><span class="guide-step__n">5</span><div>
+      <h3>역할과 에스컬레이션 문턱을 내 규모에 맞춥니다</h3>
+      <p><code>agent-role-definitions.md</code>에서 어떤 도구에게 어떤 역할을 줄지 조정합니다 (혼자 + AI 1개면 역할 절반은 삭제해도 됩니다). <code>agent-decision-rules.md</code>의 에스컬레이션 기준(예: "50개 이상 파일 수정 시 확인")을 자기 위험 감수 수준으로 조정합니다. <code>{{CORE_PROJECT}}</code> 기술 선택 정책(예시: Rust 우선)은 자기 스택으로 교체하거나 절을 삭제합니다.</p>
+    </div></div>
+
+    <div class="guide-step"><span class="guide-step__n">6</span><div>
+      <h3>첫 기록을 남기고, 이후는 규칙이 알아서 지킵니다</h3>
+      <p><code>harness-change-history.md</code>에 "v2 템플릿 도입" 1건을 기록하면 설치 끝. 이후 규칙을 고칠 때마다 이 장부에 한 줄씩 남기는 습관이 이 시스템의 심장입니다. 분기별로 저장소에 동봉된 <code>verification-checklist.md</code>(체크 9종)를 깨끗한 새 세션에 시키면 규칙 부패를 조기에 잡습니다.</p>
+    </div></div>
+
+    <div class="dodont grid-2">
+      <div class="card card--soft do">
+        <h3>마음껏 바꾸세요</h3>
+        <ul>
+          <li>모든 경로·시각·폴더 이름 (플레이스홀더 전부)</li>
+          <li>역할 분담 — 도구 개수·팀 규모에 맞게 증감</li>
+          <li>에스컬레이션 문턱값 (파일 수·승인 조건)</li>
+          <li>저장 위치 트리·파일명 세부 규칙</li>
+          <li>안 쓰는 기능 통째로 삭제 (릴레이·발행 게이트 등)</li>
+        </ul>
+      </div>
+      <div class="card card--soft dont">
+        <h3>이것만은 바꾸지 마세요 — 붕괴가 시작된 지점들입니다</h3>
+        <ul>
+          <li>단일 정본 원칙 — 규칙을 두 곳에 복사하는 순간 v1으로 회귀합니다</li>
+          <li>"지시서(ORDER) ≠ 사용자 승인" — 무인 사고의 마지막 방어선</li>
+          <li>구현 세션의 자기 검증 금지 — 격리 검증이 잡은 결함이 증거</li>
+          <li>대량 작업 전 checkpoint — 복원 불가능한 실패를 없애는 관문</li>
+          <li>변경 이력 기록 의무 — 이것이 끊기면 유령 문서가 자랍니다</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT YOU GET -->
+<section class="section">
+  <div class="wrap">
+    <p class="eyebrow">PACKAGE — 받게 되는 것</p>
+    <h2>지금 바로 통째로 가져갈 수 있습니다.</h2>
+    <div class="value__grid">
+      <div class="vcard">
+        <h3>규칙 코어</h3>
+        <div class="vcard__sub">GOVERNANCE CORE · 17 DOCS</div>
+        <div class="vcard__body"><ul>
+          <li>헌법 + 부팅 매니페스트 (필수 2문서, ≤15KB)</li>
+          <li>의사결정·역할·보안·프롬프트·워크플로 규칙</li>
+          <li>실행·완료·연속성·복구 프로토콜 (정본 단일화)</li>
+          <li>파일 운영 규칙 (명명·frontmatter·크기 예산)</li>
+          <li>시스템 레지스트리 + 무인 운영 정책</li>
+        </ul></div>
+      </div>
+      <div class="vcard vcard--featured">
+        <h3>검증된 설계</h3>
+        <div class="vcard__sub">BATTLE-TESTED DESIGN</div>
+        <div class="vcard__body"><ul>
+          <li>실측 확정 결함 110건에서 역산한 안전장치 10종</li>
+          <li>4단계 검증 방법론 문서 동봉 (verification-methodology.md)</li>
+          <li>격리 검증 체크 9종 동봉 (verification-checklist.md — 재실행 가능)</li>
+          <li>단독 1인 운영부터 다중 세션 협업까지 한 세트</li>
+          <li>도입 후 검증도 같은 방식으로 반복 가능</li>
+        </ul></div>
+      </div>
+      <div class="vcard">
+        <h3>이식 도구</h3>
+        <div class="vcard__sub">PORTABILITY KIT · MIT</div>
+        <div class="vcard__body"><ul>
+          <li>README — 구조도·설계 원칙 6·적용법 5단계</li>
+          <li>PLACEHOLDERS.md — 전 치환표 + 점검 3줄</li>
+          <li>개인정보 0 보증 — 3중 유출 검사 통과 원본</li>
+          <li>MIT 라이선스 — 개인·상업 자유 사용</li>
+          <li>순수 마크다운 — 의존성·빌드·플랫폼 종속 없음</li>
+        </ul></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+  <div class="cta__mesh" aria-hidden="true"></div>
+  <div class="wrap">
+    <h2>다음 붕괴를 겪은 뒤에 도입하시겠습니까, 겪기 전에 도입하시겠습니까.</h2>
+    <p>규칙 붕괴는 AI를 늘리는 모든 환경에서 같은 순서로 일어납니다 — 이 프레임워크는 그 순서를 이미 한 번 끝까지 겪고 나온 결과물입니다.</p>
+    <div class="btn-row">
+      <a class="btn-primary" href="https://github.com/Capernaum-user/harness-engineering">GitHub에서 받기 — 무료 · MIT</a>
+      <a class="btn-secondary" href="https://github.com/Capernaum-user/harness-engineering/issues">도입·맞춤 설치 문의 (Issues)</a>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="wrap">
+    <div>Harness Engineering v2 — 멀티 AI 에이전트 협업 거버넌스 프레임워크 · MIT License</div>
+    <div class="mono">METRICS: REAL AUDIT RECORDS, 2026-07 · NO SYNTHETIC BENCHMARKS · NO TESTIMONIALS</div>
+  </div>
+</footer>
+
+</body>
+</html>
