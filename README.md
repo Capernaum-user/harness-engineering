@@ -55,6 +55,11 @@
 
 5. 첫 가동 후 `harness-change-history.md`에 "v2 템플릿 도입" 항목을 1건 기록하면 끝입니다.
 
+## 검증 도구
+
+- [verification-checklist.md](verification-checklist.md) — 하네스가 자기 규칙을 지키는지 깨끗한 세션이 실측 판정하는 체크 9종 (분기 1회 권장)
+- [verification-methodology.md](verification-methodology.md) — 하네스를 크게 고칠 때 쓰는 4단계 검증 파이프라인 (감사 → 반박 → 커버리지 → 격리 검증)
+
 ## 운영하며 배운 것 (왜 이 모양인가)
 
 - 규칙 붕괴의 공통 원인은 나쁜 규칙이 아니라 **같은 규칙의 복제 + 비동기 진화**였습니다. 그래서 포인터 체계입니다.
