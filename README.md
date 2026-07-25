@@ -1,5 +1,7 @@
 # Harness Engineering v2 — Pure Template
 
+> 🔗 **소개 페이지(쇼케이스):** https://capernaum-user.github.io/harness-engineering/
+
 멀티 AI 에이전트(Claude / Gemini / Codex 등)가 하나의 지식 저장소(Obsidian Vault 등) 위에서 **같은 규칙으로 협업**하게 만드는 거버넌스 프레임워크의 순수 템플릿입니다.
 
 실제로 운영되던 하네스를 전수 감사(확정 결함 110건) → 전면 재설계 → 격리 세션 검증까지 거친 뒤, **사용자 고유 정보(이름·경로·프로젝트·URL)를 전부 플레이스홀더로 치환**해 추출했습니다. 그대로 복사해서 `{{...}}` 값만 채우면 자기 환경에 이식됩니다.
